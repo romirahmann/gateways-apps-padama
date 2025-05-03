@@ -1,0 +1,25 @@
+{
+  "name": "gateway-apps",
+  "version": "1.0.0",
+  "description": "Sistem gateway semua aplikasi yang ada di PT Padama Bahtera Labelindo khususnya sistem yang dibuat oleh IT Developer",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon -r dotenv/config server.js dotenv_config_path=./env/.env",
+    "prod": "node -r dotenv/config server.js "
+  },
+  "author": "Romi Rahman - IT Programmer",
+  "license": "ISC",
+  "dependencies": {
+    "argon2": "^0.43.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "knex": "^3.1.0",
+    "moment": "^2.30.1",
+    "multer": "^1.4.5-lts.2",
+    "mysql2": "^3.14.1",
+    "nodemon": "^3.1.10",
+    "socket.io": "^4.8.1"
+  }
+}
