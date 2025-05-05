@@ -9,8 +9,13 @@ const generateToken = (data) => {
 
 const verifyToken = (req, res, next) => {
   let token = req.headers.authorization;
+
   if (!token) {
     return result.error(res, "No Token Provided", 401);
+  }
+
+  if (token.startsWith("Bearer ")) {
+    token = token.split(" ")[1]; // ambil hanya token
   }
 
   jwt.verify(token, SECRET_KEY, (err, decoded) => {

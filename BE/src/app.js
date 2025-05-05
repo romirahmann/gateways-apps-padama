@@ -3,10 +3,13 @@ const cors = require("cors");
 const { createServer } = require("http");
 const { init } = require("./services/socket.service");
 const mainRoute = require("./routes/routes");
+const path = require("path");
 
 const app = express();
 const server = createServer(app);
-init(server);
+
+// Inisialisasi Socket.IO
+const io = init(server);
 
 // Middleware untuk log request
 app.use((req, res, next) => {
@@ -24,6 +27,8 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
+app.use("/get-file", express.static(path.join(__dirname, "uploads")));
 
 app.get("/", (req, res) => {
   res.status(200).json({

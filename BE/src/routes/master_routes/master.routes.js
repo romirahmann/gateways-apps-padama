@@ -12,5 +12,6 @@ router.post("/user-role", UserController.addUserRole);
 // APPS
 router.post("/upload", upload.single("file"), AppsController.uploadFile);
 router.get("/image/:fileName", AppsController.getFile);
+router.get("/apps", AppsController.getAllApps);
 
 module.exports = router;

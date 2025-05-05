@@ -4,6 +4,7 @@ const path = require("path");
 
 const masterRoutes = require("./master_routes/master.routes");
 const authRoutes = require("./utility_routes/auth.routes");
+const AppsController = require("../controllers/master_controller/AppsController");
 
 const { accessControl, verifyToken } = require("../services/auth.service");
 
@@ -13,5 +14,6 @@ router.get("/error", function (req, res) {
 
 router.use("/auth/", authRoutes);
 router.use("/master/", accessControl, verifyToken, masterRoutes);
+router.get("/data-apps/", AppsController.getAllApps);
 
 module.exports = router;

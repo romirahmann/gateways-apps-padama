@@ -2,20 +2,39 @@ const appModel = require("../../models/app.model");
 const fs = require("fs");
 const path = require("path");
 const api = require("../../tools/common");
+const { getIo } = require("../../services/socket.service");
+
+const getAllApps = async (req, res) => {
+  try {
+    let result = await appModel.getAll();
+    return api.success(res, result);
+  } catch (error) {
+    console.log(error);
+    return api.error(res, "Faild Get All Data Apps", 500);
+  }
+};
 
 const uploadFile = async (req, res) => {
+  const newData = req.body;
   const file = req.file;
   try {
     if (!file) return api.error(res, "File Not Found!", 404);
 
     let data = {
-      appName: "",
-      url: file.path,
-      port: 0,
+      appName: newData.appName,
+      subName: newData.subName,
+      url: newData.url,
+      port: newData.port,
       icon: file.filename,
     };
 
-    console.log(data);
+    const io = getIo();
+    io.emit("add_app", {
+      message: `Data aplikasi ${data.appName} berhasil ditambahkan!`,
+    });
+
+    let result = await appModel.insert(data);
+    return api.success(res, result);
   } catch (err) {
     return api.error(res, err, 500);
   }
@@ -40,4 +59,5 @@ const getFile = async (req, res) => {
 module.exports = {
   uploadFile,
   getFile,
+  getAllApps,
 };
