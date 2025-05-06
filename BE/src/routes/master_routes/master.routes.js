@@ -13,5 +13,6 @@ router.post("/user-role", UserController.addUserRole);
 router.post("/upload", upload.single("file"), AppsController.uploadFile);
 router.get("/image/:fileName", AppsController.getFile);
 router.get("/apps", AppsController.getAllApps);
+router.delete("/app/:appId", AppsController.deleteApp);
 
 module.exports = router;

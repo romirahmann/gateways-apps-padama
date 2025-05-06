@@ -3,6 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import { FaPlus, FaEdit } from "react-icons/fa";
 import { IoIosApps } from "react-icons/io";
 import { MdDeleteForever } from "react-icons/md";
+import { TiDelete } from "react-icons/ti";
 import { SearchComponent } from "../../shared/SearchComponent";
 import { PaginationComponent } from "../../shared/PaginationComponent";
 import { Modal } from "../../shared/Modal";
@@ -10,17 +11,19 @@ import axios from "axios";
 import { ApiUrl, UrlBaseBackend } from "../../../context/urlApi";
 import { Alert } from "../../shared/Alert";
 import { FaDeleteLeft } from "react-icons/fa6";
+import { motion } from "framer-motion";
 
 export function Apps() {
   const [query, setQuery] = useState("");
   const [dataApp, setDataApp] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [filteredData, setFilteredData] = useState([]);
-  const [paginatedData, setPaginatedData] = useState();
+  const [paginatedData, setPaginatedData] = useState([]);
   const [formAdd, setFormAdd] = useState({
     appName: "",
     subName: "",
-    url: "",
+    urlPadamaju: "",
+    urlPadaprima: "",
     port: 0,
     icon: null,
   });
@@ -35,8 +38,10 @@ export function Apps() {
   const getFileAPI = useContext(UrlBaseBackend);
   const [addModal, setAddModal] = useState(false);
   const [editModal, setEditModal] = useState(false);
+  const [deleteModal, setDeleteModal] = useState(false);
   const token = localStorage.getItem("token");
   const [alert, setAlert] = useState({ message: "", type: "" });
+  const [selectedId, setSelectedId] = useState(0);
 
   const config = {
     headers: {
@@ -94,14 +99,21 @@ export function Apps() {
   const handleSubmitAdd = async (e) => {
     e.preventDefault();
 
-    if (!formAdd.appName || !formAdd.url || !formAdd.port || !formAdd.icon) {
+    if (
+      !formAdd.appName ||
+      !formAdd.urlPadamaju ||
+      !formAdd.urlPadaprima ||
+      !formAdd.port ||
+      !formAdd.icon
+    ) {
       console.log("all require!");
     }
 
     const formData = new FormData();
     formData.append("appName", formAdd.appName);
     formData.append("subName", formAdd.subName);
-    formData.append("url", formAdd.url);
+    formData.append("urlPadamaju", formAdd.urlPadamaju);
+    formData.append("urlPadaprima", formAdd.urlPadaprima);
     formData.append("port", formAdd.port);
     formData.append("file", formAdd.icon);
 
@@ -124,7 +136,7 @@ export function Apps() {
         type: "success",
       });
     } catch (err) {
-      console.log("Failed to Upload Data!");
+      console.log("Failed to Upload Data!", err);
       setAlert({ message: "Gagal mengupload data!", type: "error" });
     }
   };
@@ -136,7 +148,28 @@ export function Apps() {
   };
 
   // DELETE FUNCTION
-  const handleDelete = () => {};
+  const handleSelectedId = (id) => {
+    setSelectedId(id);
+    deleteModal ? setDeleteModal(false) : setDeleteModal(true);
+  };
+  const handleDelete = (appId) => {
+    if (!appId) return;
+    const deleteData = async () => {
+      try {
+        let result = await axios.delete(
+          `${baseUrl}/master/app/${appId}`,
+          config
+        );
+        fecthApps();
+        console.log(result.data);
+        setDeleteModal(false);
+      } catch (err) {
+        console.log(err.response);
+      }
+    };
+
+    deleteData();
+  };
 
   return (
     <>
@@ -175,38 +208,56 @@ export function Apps() {
                   <th className="px-4 py-3">Name</th>
                   <th className="px-4 py-3">Sub Name</th>
                   <th className="px-4 py-3">Port</th>
-                  <th className="px-4 py-3">Url</th>
+                  <th className="px-4 py-3">Url Padaprima</th>
+                  <th className="px-4 py-3">Url Padamaju</th>
                   <th className="px-4 py-3">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {dataApp.map((app, index) => (
-                  <tr key={app.id}>
-                    <td className="px-4 py-3">
-                      <img
-                        src={`${getFileAPI}/get-file/${app.icon}`}
-                        alt={app.icon}
-                        className="w-10"
-                      />
-                    </td>
-                    <td className="px-4 py-3">{app.appName}</td>
-                    <td className="px-4 py-3">{app.subName}</td>
-                    <td className="px-4 py-3">{app.port}</td>
-                    <td className="px-4 py-3">{app.url}</td>
-                    <td>
-                      <div className="flex gap-2 text-2xl">
-                        <FaEdit className="text-green-700" />
-                        <MdDeleteForever className="text-red-700" />
-                      </div>
+                {paginatedData.length > 0 ? (
+                  paginatedData.map((app, index) => (
+                    <tr key={app.id}>
+                      <td className="px-4 py-3">
+                        <img
+                          src={`${getFileAPI}/get-file/${app.icon}`}
+                          alt={app.icon}
+                          className="w-10"
+                        />
+                      </td>
+                      <td className="px-4 py-3">{app.appName}</td>
+                      <td className="px-4 py-3">{app.subName}</td>
+                      <td className="px-4 py-3">{app.port}</td>
+                      <td className="px-4 py-3">{app.urlPadaprima}</td>
+                      <td className="px-4 py-3">{app.urlPadamaju}</td>
+                      <td>
+                        <div className="flex gap-2 text-2xl">
+                          <FaEdit className="text-green-700" />
+                          <button onClick={() => handleSelectedId(app.appId)}>
+                            <MdDeleteForever className="text-red-700" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr className="px-3 py-2">
+                    <td colSpan="7" className=" text-center  font-bold">
+                      {" "}
+                      Data Not Found
                     </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
           </div>
 
           {/* Pagination */}
-          <PaginationComponent />
+          <PaginationComponent
+            setPaginatedData={setPaginatedData}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            data={filteredData}
+          />
         </div>
       </div>
 
@@ -248,15 +299,30 @@ export function Apps() {
             </div>
             <div className="mt-3 ">
               <label
-                htmlFor="url"
+                htmlFor="urlPadamaju"
                 className="block text-sm font-medium text-gray-900"
               >
-                Url
+                Url Padamaju
               </label>
               <input
                 type="text"
-                id="url"
-                name="url"
+                id="urlPadamaju"
+                name="urlPadamaju"
+                className="w-full py-2 px-3 text-sm border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-600 focus:border-blue-500"
+                onChange={handleChangeAdd}
+              />
+            </div>
+            <div className="mt-3 ">
+              <label
+                htmlFor="urlPadaprima"
+                className="block text-sm font-medium text-gray-900"
+              >
+                Url Padaprima
+              </label>
+              <input
+                type="text"
+                id="urlPadaprima"
+                name="urlPadaprima"
                 className="w-full py-2 px-3 text-sm border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-600 focus:border-blue-500"
                 onChange={handleChangeAdd}
               />
@@ -393,6 +459,37 @@ export function Apps() {
               </button>
             </div>
           </form>
+        </div>
+      </Modal>
+
+      {/* DELETE MODAL */}
+      <Modal isOpen={deleteModal} onClose={() => setDeleteModal(false)}>
+        <div className="container-fluid flex flex-col items-center justify-center">
+          <motion.div
+            initial={{ opacity: 0, y: -50 }}
+            animate={{ opacity: 1, y: [-50, 0, -15, 0] }}
+            transition={{
+              duration: 0.8,
+              ease: "easeOut",
+            }}
+            className="icon text-[10em] text-center text-red-600"
+          >
+            <TiDelete />
+          </motion.div>
+          <div className="descriptionModalDelete">
+            <p>Are you sure for delete this data apps ?</p>
+          </div>
+          <div className="buttonModalDelete mt-5 ">
+            <button className="px-4 py-2 font-medium border border-gray-500 hover:bg-gray-200 hover:border-gray-900 rounded-lg">
+              Cancel
+            </button>
+            <button
+              onClick={() => handleDelete(selectedId)}
+              className="px-4 py-2 ms-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-800"
+            >
+              Delete
+            </button>
+          </div>
         </div>
       </Modal>
 

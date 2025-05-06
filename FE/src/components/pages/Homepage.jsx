@@ -11,28 +11,40 @@ export function Homepage() {
   const [dataApp, setDataApp] = useState([]);
   const apiUrl = useContext(ApiUrl);
   const getFileAPI = useContext(UrlBaseBackend);
+  const [ip, setIp] = useState("");
 
   useEffect(() => {
-    fecthData();
+    fetchData();
+  }, [dataApp]);
+
+  useEffect(() => {
+    const fullHost = window.location.hostname; // misalnya: "192.168.9.192"
+    const ipParts = fullHost.split(".");
+    const partialIP = ipParts.slice(0, 3).join("."); // hasil: "192.168.9"
+
+    localStorage.setItem("IP", partialIP);
+    setIp(partialIP);
   }, []);
 
   useEffect(() => {
     const handleUpdateDataApp = (newData) => {
-      fecthData();
+      fetchData();
       console.log("Data Update!");
     };
 
     socket.on("add_app", handleUpdateDataApp);
+    socket.on("delete_app", handleUpdateDataApp);
 
     return () => {
       socket.off("add_app", handleUpdateDataApp);
+      socket.off("delete_app", handleUpdateDataApp);
     };
   }, []);
 
-  const fecthData = async () => {
+  const fetchData = async () => {
     try {
       let result = await axios.get(`${apiUrl}/data-apps`);
-      console.log(result.data.data);
+
       setDataApp(result.data.data);
     } catch (err) {
       console.log(err);
@@ -104,11 +116,17 @@ export function Homepage() {
                       {app.subName}
                     </h2>
                     <h3 className="text-xs md:text-sm lg:text-md my-3 italic">
-                      {app.url}
+                      {ip && ip === "192.168.10"
+                        ? app.urlPadamaju
+                        : app.urlPadaprima}
                     </h3>
 
                     <a
-                      href={`${app.url}`}
+                      href={
+                        ip && ip === "192.168.10"
+                          ? `${app.urlPadamaju}`
+                          : `${app.urlPadaprima}`
+                      }
                       target="_blank"
                       className="px-3 py-1 lg:px-4 lg:py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md lg:rounded-xl"
                     >

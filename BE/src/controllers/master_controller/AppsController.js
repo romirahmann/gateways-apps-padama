@@ -23,7 +23,8 @@ const uploadFile = async (req, res) => {
     let data = {
       appName: newData.appName,
       subName: newData.subName,
-      url: newData.url,
+      urlPadamaju: newData.urlPadamaju,
+      urlPadaprima: newData.urlPadaprima,
       port: newData.port,
       icon: file.filename,
     };
@@ -56,8 +57,75 @@ const getFile = async (req, res) => {
   }
 };
 
+const updateApp = async (req, res) => {
+  let { appId } = req.params;
+  let newData = req.body;
+  let file = req.file;
+  try {
+    if (!file) {
+      let data = {
+        appName: newData.appName,
+        subName: newData.subName,
+        urlPadamaju: newData.urlPadamaju,
+        urlPadaprima: newData.urlPadaprima,
+        port: newData.port,
+        icon: newData.filename,
+      };
+
+      let result = await appModel.update(appId, data);
+      return api.success(res, result);
+    }
+
+    let data = {
+      appName: newData.appName,
+      subName: newData.subName,
+      urlPadamaju: newData.urlPadamaju,
+      urlPadaprima: newData.urlPadaprima,
+      port: newData.port,
+      icon: file.filename,
+    };
+
+    let result = await appModel.update(appId, data);
+    return api.success(res, result);
+  } catch (error) {
+    console.log(error);
+    return api.error(res, error, 500);
+  }
+};
+
+const deleteApp = async (req, res) => {
+  const { appId } = req.params;
+  try {
+    if (!appId) return api.error(res, "App Id not found!", 401);
+
+    let dataApp = await appModel.getById(appId);
+
+    const iconPath = path.join(__dirname, "../../uploads", dataApp.icon);
+    // console.log(iconPath);
+    if (fs.existsSync(iconPath)) {
+      fs.unlinkSync(iconPath);
+      console.log("Icon file deleted:", dataApp.icon);
+    } else {
+      console.log(fs.existsSync(iconPath), "file tidak terhapus!");
+    }
+
+    const io = getIo();
+    io.emit("delete_app", {
+      message: `Data aplikasi dengan ID ${appId} berhasil didelete!`,
+    });
+
+    let result = await appModel.del(appId);
+    return api.success(res, result);
+  } catch (err) {
+    console.log(err);
+    return api.error(res, "Failed to Delete Apps Data", 500);
+  }
+};
+
 module.exports = {
   uploadFile,
   getFile,
   getAllApps,
+  deleteApp,
+  updateApp,
 };
