@@ -61,6 +61,8 @@ const updateApp = async (req, res) => {
   let { appId } = req.params;
   let newData = req.body;
   let file = req.file;
+  const io = getIo();
+
   try {
     if (!file) {
       let data = {
@@ -69,8 +71,11 @@ const updateApp = async (req, res) => {
         urlPadamaju: newData.urlPadamaju,
         urlPadaprima: newData.urlPadaprima,
         port: newData.port,
-        icon: newData.filename,
       };
+
+      io.emit("UPDATE_APP", {
+        message: `Data aplikasi ${data.appName} berhasil diupdate!`,
+      });
 
       let result = await appModel.update(appId, data);
       return api.success(res, result);
@@ -84,7 +89,9 @@ const updateApp = async (req, res) => {
       port: newData.port,
       icon: file.filename,
     };
-
+    io.emit("UPDATE_APP", {
+      message: `Data aplikasi ${data.appName} berhasil diupdate!`,
+    });
     let result = await appModel.update(appId, data);
     return api.success(res, result);
   } catch (error) {

@@ -4,6 +4,7 @@ import { FaPlus, FaEdit } from "react-icons/fa";
 import { IoIosApps } from "react-icons/io";
 import { MdDeleteForever } from "react-icons/md";
 import { TiDelete } from "react-icons/ti";
+import { LuImageOff } from "react-icons/lu";
 import { SearchComponent } from "../../shared/SearchComponent";
 import { PaginationComponent } from "../../shared/PaginationComponent";
 import { Modal } from "../../shared/Modal";
@@ -30,7 +31,8 @@ export function Apps() {
   const [formEdit, setFormEdit] = useState({
     appName: "",
     subName: "",
-    url: "",
+    urlPadamaju: "",
+    urlPadaprima: "",
     port: 0,
     icon: null,
   });
@@ -142,9 +144,73 @@ export function Apps() {
   };
 
   // EDIT FUNCTION
-  const handleChangeEdit = (e) => {};
-  const handleSubmitEdit = (e) => {
+  const handleModalEdit = (data) => {
+    setEditModal((prev) => !prev);
+    setFormEdit({
+      appName: data.appName || "",
+      subName: data.subName || "",
+      urlPadamaju: data.urlPadamaju || "",
+      urlPadaprima: data.urlPadaprima || "",
+      port: data.port || 0,
+      icon: data.icon || null,
+    });
+    // console.log(data);
+    setSelectedId(data.appId);
+  };
+
+  const handleChangeEdit = (e) => {
+    const { name, value, type, files } = e.target;
+
+    if (type === "file") {
+      const file = files?.[0];
+      if (!file) return;
+
+      const validTypes = ["image/jpeg", "image/png"];
+      if (!validTypes.includes(file.type)) {
+        console.log("File hanya boleh jpg/png");
+        return;
+      }
+
+      setFormEdit((prev) => ({
+        ...prev,
+        [name]: file,
+      }));
+    } else {
+      setFormEdit((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
+  };
+  const handleSubmitEdit = async (e) => {
     e.preventDefault();
+
+    // console.log(typeof formEdit.icon);
+    const formData = new FormData();
+    formData.append("appName", formEdit.appName);
+    formData.append("subName", formEdit.subName);
+    formData.append("urlPadamaju", formEdit.urlPadamaju);
+    formData.append("urlPadaprima", formEdit.urlPadaprima);
+    formData.append("port", formEdit.port);
+    formData.append("file", formEdit.icon);
+
+    try {
+      const response = await axios.put(
+        `${baseUrl}/master/app/${selectedId}`,
+        formData,
+        config
+      );
+      // console.log(response.data.data);
+      fecthApps();
+      setEditModal(false);
+      setAlert({
+        message: "Berhasil update data aplikasi!",
+        type: "success",
+      });
+    } catch (err) {
+      console.log(err);
+      setAlert({ message: "Gagal update data aplikasi!", type: "error" });
+    }
   };
 
   // DELETE FUNCTION
@@ -161,10 +227,15 @@ export function Apps() {
           config
         );
         fecthApps();
-        console.log(result.data);
+        // console.log(result.data);
         setDeleteModal(false);
+        setAlert({
+          message: "Berhasil delete data aplikasi!",
+          type: "success",
+        });
       } catch (err) {
         console.log(err.response);
+        setAlert({ message: "Gagal delete data aplikasi!", type: "error" });
       }
     };
 
@@ -231,7 +302,9 @@ export function Apps() {
                       <td className="px-4 py-3">{app.urlPadamaju}</td>
                       <td>
                         <div className="flex gap-2 text-2xl">
-                          <FaEdit className="text-green-700" />
+                          <button onClick={() => handleModalEdit(app)}>
+                            <FaEdit className="text-green-700" />
+                          </button>
                           <button onClick={() => handleSelectedId(app.appId)}>
                             <MdDeleteForever className="text-red-700" />
                           </button>
@@ -374,7 +447,7 @@ export function Apps() {
         <h1 className="text-xl font-bold">EDIT APPS</h1>
         <hr />
         <div className="form max-w-full">
-          <form onSubmit={handleSubmitAdd}>
+          <form onSubmit={handleSubmitEdit}>
             <div className="mt-5 ">
               <label
                 htmlFor="appName"
@@ -386,8 +459,9 @@ export function Apps() {
                 type="text"
                 id="appName"
                 name="appName"
+                value={formEdit.appName}
                 className="w-full py-2 px-3 text-sm border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-600 focus:border-blue-500"
-                onChange={handleChangeAdd}
+                onChange={handleChangeEdit}
               />
             </div>
             <div className="mt-5 ">
@@ -401,23 +475,41 @@ export function Apps() {
                 type="text"
                 id="subName"
                 name="subName"
+                value={formEdit.subName}
                 className="w-full py-2 px-3 text-sm border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-600 focus:border-blue-500"
-                onChange={handleChangeAdd}
+                onChange={handleChangeEdit}
               />
             </div>
             <div className="mt-3 ">
               <label
-                htmlFor="url"
+                htmlFor="urlPadaprima"
                 className="block text-sm font-medium text-gray-900"
               >
-                Url
+                Url Padaprima
               </label>
               <input
                 type="text"
-                id="url"
-                name="url"
+                id="urlPadaprima"
+                name="urlPadaprima"
+                value={formEdit.urlPadaprima}
                 className="w-full py-2 px-3 text-sm border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-600 focus:border-blue-500"
-                onChange={handleChangeAdd}
+                onChange={handleChangeEdit}
+              />
+            </div>
+            <div className="mt-3 ">
+              <label
+                htmlFor="urlPadamaju"
+                className="block text-sm font-medium text-gray-900"
+              >
+                Url Padamaju
+              </label>
+              <input
+                type="text"
+                id="urlPadamaju"
+                name="urlPadamaju"
+                value={formEdit.urlPadamaju}
+                className="w-full py-2 px-3 text-sm border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-600 focus:border-blue-500"
+                onChange={handleChangeEdit}
               />
             </div>
             <div className="mt-3 ">
@@ -431,8 +523,9 @@ export function Apps() {
                 type="number"
                 id="port"
                 name="port"
+                value={formEdit.port}
                 className="w-full py-2 px-3 text-sm border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-600 focus:border-blue-500"
-                onChange={handleChangeAdd}
+                onChange={handleChangeEdit}
               />
             </div>
             <div className="mt-5 ">
@@ -442,13 +535,24 @@ export function Apps() {
               >
                 Icon
               </label>
-              <input
-                type="file"
-                id="icon"
-                name="icon"
-                className="w-full py-2 px-3 text-sm border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-600 focus:border-blue-500"
-                onChange={handleChangeAdd}
-              />
+              <div className="inputFile flex gap-2 mt-1">
+                {formEdit.icon && typeof formEdit.icon === "object" ? (
+                  <LuImageOff className="text-xl text-gray-500" />
+                ) : formEdit.icon ? (
+                  <img
+                    src={`${getFileAPI}/get-file/${formEdit.icon}`}
+                    alt={formEdit.icon}
+                    className="w-10 "
+                  />
+                ) : null}
+                <input
+                  type="file"
+                  id="icon"
+                  name="icon"
+                  className="w-full py-2 px-3 text-sm border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-600 focus:border-blue-500"
+                  onChange={handleChangeEdit}
+                />
+              </div>
             </div>
             <div className="flex justify-center">
               <button

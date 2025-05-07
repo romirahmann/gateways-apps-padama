@@ -19,6 +19,7 @@ export function Homepage() {
 
   useEffect(() => {
     const fullHost = window.location.hostname; // misalnya: "192.168.9.192"
+    console.log(fullHost);
     const ipParts = fullHost.split(".");
     const partialIP = ipParts.slice(0, 3).join("."); // hasil: "192.168.9"
 
