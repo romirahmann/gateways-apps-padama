@@ -1,9 +1,17 @@
 const argon2 = require("argon2");
 const api = require("../../tools/common");
 const userModel = require("../../models/user.model");
-const logService = require("../../services/log.service");
 
 // HASH PASSWORD FUNCTION
+const getAllUser = async (req, res) => {
+  try {
+    let result = await userModel.getAll();
+    return api.success(res, result);
+  } catch (err) {
+    console.log(err);
+    return api.error(res, err, 500);
+  }
+};
 const hashPassword = async (plainPassword) => {
   try {
     return await argon2.hash(plainPassword, {
@@ -32,6 +40,31 @@ const register = async (req, res) => {
   }
 };
 
+const deleteUser = async (req, res) => {
+  const { userId } = req.params;
+  try {
+    let result = await userModel.del(userId);
+    return api.success(res, result);
+  } catch (err) {
+    console.log(err);
+    return api.error(res, err, 500);
+  }
+};
+
+const updateUser = async (req, res) => {
+  const { userId } = req.params;
+  const data = req.body;
+  try {
+    if (!userId || !data) return api.error(res, "ID & Data invalid", 401);
+
+    let result = await userModel.update(userId, data);
+    return api.success(res, result);
+  } catch (err) {
+    console.log(err);
+    return api.error(res, err, 500);
+  }
+};
+
 const addUserRole = async (req, res) => {
   const data = req.body;
   try {
@@ -48,4 +81,7 @@ const addUserRole = async (req, res) => {
 module.exports = {
   register,
   addUserRole,
+  getAllUser,
+  deleteUser,
+  updateUser,
 };

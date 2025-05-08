@@ -6,12 +6,14 @@ import { useContext, useEffect, useState } from "react";
 import { MdDashboard } from "react-icons/md";
 import { ApiUrl, UrlBaseBackend } from "../../context/urlApi";
 import socket from "../../context/socket";
+import addLog from "../../context/LogActivity";
 
 export function Homepage() {
   const [dataApp, setDataApp] = useState([]);
   const apiUrl = useContext(ApiUrl);
   const getFileAPI = useContext(UrlBaseBackend);
-  const [ip, setIp] = useState("");
+  const [hostname, setHostname] = useState("");
+  const [ipComp, setIpComp] = useState("");
 
   useEffect(() => {
     fetchData();
@@ -19,12 +21,11 @@ export function Homepage() {
 
   useEffect(() => {
     const fullHost = window.location.hostname; // misalnya: "192.168.9.192"
-    console.log(fullHost);
     const ipParts = fullHost.split(".");
     const partialIP = ipParts.slice(0, 3).join("."); // hasil: "192.168.9"
 
-    localStorage.setItem("IP", partialIP);
-    setIp(partialIP);
+    localStorage.setItem("HOSTNAME", partialIP);
+    setHostname(partialIP);
   }, []);
 
   useEffect(() => {
@@ -42,6 +43,10 @@ export function Homepage() {
     };
   }, []);
 
+  useEffect(() => {
+    getIPComp();
+  }, []);
+
   const fetchData = async () => {
     try {
       let result = await axios.get(`${apiUrl}/data-apps`);
@@ -50,6 +55,24 @@ export function Homepage() {
     } catch (err) {
       console.log(err);
     }
+  };
+
+  const getIPComp = async () => {
+    try {
+      const result = await axios.get(`${apiUrl}/auth/get-ip`);
+
+      let IpComp = result.data.data;
+      setIpComp(IpComp);
+
+      localStorage.setItem("IP_COMPUTER", IpComp);
+    } catch (err) {
+      console.log("Error get IP: ", err);
+    }
+  };
+
+  const handleVisit = (url, appName) => {
+    addLog(ipComp, `Access ${appName}`, 1, `SUCCESS Go to ${appName}(${url})`);
+    window.open(url, "_blank");
   };
 
   return (
@@ -117,14 +140,19 @@ export function Homepage() {
                       {app.subName}
                     </h2>
                     <h3 className="text-xs md:text-sm lg:text-md my-3 italic">
-                      {ip && ip === "192.168.10"
+                      {hostname && hostname === "192.168.10"
                         ? app.urlPadamaju
                         : app.urlPadaprima}
                     </h3>
 
-                    <a
+                    <button
+                      onClick={() => {
+                        hostname && hostname === "192.168.10"
+                          ? handleVisit(app.urlPadamaju, app.appName)
+                          : handleVisit(app.urlPadaprima, app.appName);
+                      }}
                       href={
-                        ip && ip === "192.168.10"
+                        hostname && hostname === "192.168.10"
                           ? `${app.urlPadamaju}`
                           : `${app.urlPadaprima}`
                       }
@@ -132,7 +160,7 @@ export function Homepage() {
                       className="px-3 py-1 lg:px-4 lg:py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md lg:rounded-xl"
                     >
                       VISIT
-                    </a>
+                    </button>
                   </div>
                 </div>
               ))}

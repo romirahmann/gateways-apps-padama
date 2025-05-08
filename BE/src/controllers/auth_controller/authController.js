@@ -48,4 +48,10 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { login };
+const getIp = async (req, res) => {
+  let ip = req.socket.remoteAddress;
+
+  return api.success(res, ip);
+};
+
+module.exports = { login, getIp };

@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { ApiUrl } from "../../../context/urlApi";
 import axios from "axios";
 import { useNavigate } from "@tanstack/react-router";
+import addLog from "../../../context/LogActivity";
 
 export function Login() {
   const [isOpenPassword, SetOpenPassword] = useState(false);
@@ -14,6 +15,7 @@ export function Login() {
     username: "",
     password: "",
   });
+  const IpComp = localStorage.getItem("IP_COMPUTER");
   const baseUrl = useContext(ApiUrl);
   const navigate = useNavigate();
 
@@ -40,9 +42,10 @@ export function Login() {
       try {
         let result = await axios.post(`${baseUrl}/auth/login`, formData);
 
+        addLog(IpComp, "LOGIN", 1, `${formData.username} berhasil login!`);
         let token = result.data.data.token;
         let userData = result.data.data.userData;
-        console.log(token);
+        // console.log(token);
         localStorage.setItem("token", token);
         localStorage.setItem("userData", JSON.stringify(userData));
 
@@ -64,6 +67,7 @@ export function Login() {
           message: "LOGIN FAILED! Wrong is username & password ",
           show: true,
         });
+        addLog(IpComp, "LOGIN", 0, "Wrong is username & Pasword");
       }
     };
     submitLogin();

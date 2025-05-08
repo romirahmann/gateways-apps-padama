@@ -6,8 +6,11 @@ const UserController = require("../../controllers/master_controller/UserControll
 const AppsController = require("../../controllers/master_controller/AppsController");
 
 // USER
+router.get("/users", UserController.getAllUser);
+router.put("/user/:userId", UserController.updateUser);
 router.post("/register", UserController.register);
 router.post("/user-role", UserController.addUserRole);
+router.delete("/user/:userId", UserController.deleteUser);
 
 // APPS
 router.post("/upload", upload.single("file"), AppsController.uploadFile);

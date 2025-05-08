@@ -1,3 +1,5 @@
 const db = require("../database/db.config");
 
-module.exports = {};
+const insert = async (data) => await db("log_activity").insert(data);
+
+module.exports = { insert };

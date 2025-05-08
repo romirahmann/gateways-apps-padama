@@ -120,11 +120,6 @@ export function Apps() {
     formData.append("file", formAdd.icon);
 
     try {
-      // console.log("formAdd: ", formAdd);
-      // for (let [key, value] of formData.entries()) {
-      //   console.log(`${key}:`, value);
-      // }
-
       let result = await axios.post(
         `${baseUrl}/master/upload`,
         formData,
@@ -275,13 +270,13 @@ export function Apps() {
             <table className="min-w-full text-sm text-left text-gray-700">
               <thead className="bg-blue-100 text-blue-800 font-semibold">
                 <tr>
-                  <th className="px-4 py-3">Image</th>
-                  <th className="px-4 py-3">Name</th>
-                  <th className="px-4 py-3">Sub Name</th>
-                  <th className="px-4 py-3">Port</th>
-                  <th className="px-4 py-3">Url Padaprima</th>
-                  <th className="px-4 py-3">Url Padamaju</th>
-                  <th className="px-4 py-3">Action</th>
+                  <th className="px-4 py-3 uppercase">Image</th>
+                  <th className="px-4 py-3 uppercase">Name</th>
+                  <th className="px-4 py-3 uppercase">Sub Name</th>
+                  <th className="px-4 py-3 uppercase">Port</th>
+                  <th className="px-4 py-3 uppercase">Url Padaprima</th>
+                  <th className="px-4 py-3 uppercase">Url Padamaju</th>
+                  <th className="px-4 py-3 uppercase">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
