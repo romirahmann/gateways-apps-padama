@@ -4,7 +4,7 @@ const result = require("../tools/common");
 const SECRET_KEY = process.env.SECRET_KEY;
 
 const generateToken = (data) => {
-  return jwt.sign(data, SECRET_KEY, { expiresIn: "1h" });
+  return jwt.sign(data, SECRET_KEY, { expiresIn: "24h" });
 };
 
 const verifyToken = (req, res, next) => {

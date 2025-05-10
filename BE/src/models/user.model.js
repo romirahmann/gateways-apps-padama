@@ -18,7 +18,12 @@ const del = async (userId) =>
 const update = async (userId, data) =>
   await db("users").where("userId", userId).update(data);
 
+const totalUser = async () => {
+  const result = await db("users").count("userId as count");
+  return Number(result[0].count); // pastikan hasilnya number
+};
+
 // ROLE
 const insertRole = async (data) => await db("user_role").insert(data);
 
-module.exports = { login, insert, insertRole, getAll, del, update };
+module.exports = { login, insert, insertRole, getAll, del, update, totalUser };

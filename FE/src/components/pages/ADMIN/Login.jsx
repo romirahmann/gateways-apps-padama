@@ -74,7 +74,7 @@ export function Login() {
   };
 
   return (
-    <div className="w-full h-screen bg-[url('/images/bg-login.JPG')] bg-cover bg-center flex items-center justify-center">
+    <div className="w-full h-screen bg-[url('/images/bg-login.png')] bg-cover bg-center flex items-center justify-center">
       <div className="relative backdrop-blur-lg bg-blue-900/30 shadow-xl rounded-xl p-6 sm:p-8 w-full max-w-md mx-4">
         {alert.show && (
           <motion.div
