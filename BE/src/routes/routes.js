@@ -17,5 +17,6 @@ router.use("/auth/", authRoutes);
 router.use("/master/", accessControl, verifyToken, masterRoutes);
 router.get("/data-apps/", AppsController.getAllApps);
 router.post("/log", LogController.addLog);
+router.get("/icon/:fileName", AppsController.getFile);
 
 module.exports = router;

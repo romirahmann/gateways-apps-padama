@@ -71,6 +71,7 @@ export function Homepage() {
   };
 
   const handleVisit = (url, appName) => {
+    // console.log(getFileAPI);
     addLog(ipComp, `Access ${appName}`, 1, `SUCCESS Go to ${appName}(${url})`);
     window.open(url, "_blank");
   };
@@ -129,7 +130,7 @@ export function Homepage() {
                 <div className="relative items p-3 mt-0 md:mt-10" key={index}>
                   <div className="absolute icon-app center left-1/2 -top-10 -translate-x-1/2">
                     <span className="icon bg-gray-200 w-24 flex justify-center p-5 rounded-xl">
-                      <img src={`${getFileAPI}/get-file/${app.icon}`} alt="" />
+                      <img src={`${getFileAPI}/icon/${app.icon}`} alt="" />
                     </span>
                   </div>
                   <div className="description text-center bg-white p-3 rounded-lg  h-full">

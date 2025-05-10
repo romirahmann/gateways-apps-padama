@@ -285,7 +285,7 @@ export function Apps() {
                     <tr key={app.id}>
                       <td className="px-4 py-3">
                         <img
-                          src={`${getFileAPI}/get-file/${app.icon}`}
+                          src={`${getFileAPI}/icon/${app.icon}`}
                           alt={app.icon}
                           className="w-10"
                         />
