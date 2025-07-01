@@ -1,0 +1,9 @@
+BE
+C:\Program Files\nodejs\node.exe
+D:\IT\ROMI\APP\GATEWAY_APP\BE
+-r dotenv/config server.js dotenv_config_path=./env/.env
+
+FE
+C:\Program Files\nodejs\node.exe
+D:\IT\ROMI\APP\GATEWAY_APP\FE
+D:\IT\ROMI\APP\GATEWAY_APP\FE\node_modules\vite\bin\vite.js dev

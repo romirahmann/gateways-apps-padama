@@ -78,14 +78,14 @@ export function Homepage() {
 
   return (
     <>
-      <div className="max-w-full h-screen bg-gradient-to-tr from-[#021B45] to-[#0031A7]">
+      <div className="min-h-screen bg-gradient-to-tr from-[#021B45] to-[#0031A7]">
         <div className="container-fluid p-10">
           {/* TITLE */}
           <motion.div
             initial={{ scaleX: 0, opacity: 0, transformOrigin: "center" }}
             animate={{ scaleX: 1, opacity: 1 }}
             transition={{ duration: 0.9, ease: "easeOut" }}
-            className="box-title bg-white/50 backdrop-blur-md rounded-lg shadow-lg flex items-center p-5"
+            className="box-title fixed top-0 left-0 right-0 z-50 bg-white/50 backdrop-blur-md rounded-none shadow-lg flex items-center p-5"
           >
             {/* Logo & Title */}
             <motion.span
@@ -134,10 +134,10 @@ export function Homepage() {
                     </span>
                   </div>
                   <div className="description text-center bg-white p-3 rounded-lg  h-full">
-                    <h1 className="text-xl md:text-2xl lg:text-3xl font-extrabold mt-[2em]">
+                    <h1 className="text-md md:text-xl lg:text-2xl font-extrabold mt-[2em]">
                       {app.appName}
                     </h1>
-                    <h2 className="text-md md:text-xl lg:text-2xl font-bold">
+                    <h2 className="text-sm md:text-md  font-bold">
                       {app.subName}
                     </h2>
                     <h3 className="text-xs md:text-sm lg:text-md my-3 italic">

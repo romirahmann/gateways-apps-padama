@@ -45,7 +45,7 @@ const getFile = async (req, res) => {
   const { fileName } = req.params;
   try {
     const filePath = path.join(__dirname, "../../uploads", fileName);
-    console.log(filePath);
+
     if (fs.existsSync(filePath)) {
       res.sendFile(filePath);
     } else {
